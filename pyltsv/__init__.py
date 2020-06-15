@@ -1,14 +1,14 @@
 """Python Library for LTSV."""
 
+from typing import IO
 from typing import Iterable
 from typing import Optional
 from typing import Text
-from typing import TextIO
 from typing import Tuple
 
 
 def reader(ltsvfile, strict=False, delimiter=None, labeldelimiter=None):
-    # type: (TextIO, bool, Optional[Text], Optional[Text]) -> StrReader
+    # type: (IO[Text], bool, Optional[Text], Optional[Text]) -> StrReader
     """Get LTSV reader for unicode str.
 
     :param ltsvfile: File-like object to read input
@@ -24,7 +24,7 @@ class StrReader(object):
     """LTSV reader for unicode str."""
 
     def __init__(self, ltsvfile, parser):
-        # type: (TextIO, StrLineParser) -> None
+        # type: (IO[Text], StrLineParser) -> None
         """Initialize.
 
         :param ltsvfile: File-like object to read input
@@ -54,6 +54,8 @@ class StrReader(object):
             raise StopIteration
         return r
 
+    next = __next__  # For Python 2.7 compatibility
+
     def readline(self):
         # type: () -> Optional[Iterable[Tuple[Text, Optional[Text]]]]
         """Read one line and return parsed object.
@@ -70,8 +72,8 @@ class StrLineParser(object):
     """LTSV line parser."""
 
     strict = False
-    delimiter = "\t"
-    labeldelimiter = ":"
+    delimiter = u"\t"
+    labeldelimiter = u":"
 
     def __init__(self, strict=False, delimiter=None, labeldelimiter=None):
         # type: (bool, Optional[Text], Optional[Text]) -> None

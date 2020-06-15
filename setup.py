@@ -5,7 +5,7 @@
 from setuptools import setup
 
 
-def _get_version() -> str:
+def _get_version():  # type: ignore
     with open("pyltsv/_version.py") as f:
         for line in f:
             if line.startswith("__version__"):
@@ -14,4 +14,4 @@ def _get_version() -> str:
     raise RuntimeError("Unable to find version string.")
 
 
-setup(version=_get_version(),)
+setup(version=_get_version(),)  # type: ignore
