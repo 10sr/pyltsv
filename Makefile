@@ -28,6 +28,7 @@ blacken:
 
 mypy:
 	mypy --strict .
+	mypy --strict --py2 .
 
 
 
