@@ -116,6 +116,7 @@ jobs:
       - name: Install denendencies
         run: |
           set -eux
-          pip install .[dev]
+          pip install .[dev] .[linter]
       - name: Run linter
         run: make lint
+
