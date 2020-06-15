@@ -9,22 +9,46 @@ from typing import Tuple
 
 def reader(ltsvfile, strict=False, delimiter=None, labeldelimiter=None):
     # type: (TextIO, bool, Optional[Text], Optional[Text]) -> StrReader
+    """Get LTSV reader for unicode str.
+
+    :param ltsvfile: File-like object to read input
+    :param strict: Enable strict parsing
+    :param delimiter: Set custom field delimiter
+    :param labeldelimiter: Set custom label delimiter
+    :returns: StrReader object
+    """
     return StrReader(ltsvfile, StrLineParser(strict, delimiter, labeldelimiter))
 
 
 class StrReader(object):
+    """LTSV reader for unicode str."""
+
     def __init__(self, ltsvfile, parser):
         # type: (TextIO, StrLineParser) -> None
+        """Initialize.
+
+        :param ltsvfile: File-like object to read input
+        :param parser: StrLineParser object
+        """
         self._ltsvfile = ltsvfile
         self._parser = parser
         return
 
     def __iter__(self):
         # type: () -> StrReader
+        """Get iter object.
+
+        :returns: Iter object
+        """
         return self
 
     def __next__(self):
         # type: () -> Iterable[Tuple[Text, Optional[Text]]]
+        """Return next element.
+
+        :returns: Parsed object
+        :raises StopIteration: EOF
+        """
         r = self.readline()
         if r is None:
             raise StopIteration
@@ -32,6 +56,10 @@ class StrReader(object):
 
     def readline(self):
         # type: () -> Optional[Iterable[Tuple[Text, Optional[Text]]]]
+        """Read one line and return parsed object.
+
+        :returns: parsed object or None for EOF
+        """
         line = self._ltsvfile.readline()
         if line == "":
             return None
@@ -39,12 +67,22 @@ class StrReader(object):
 
 
 class StrLineParser(object):
+    """LTSV line parser."""
+
     strict = False
     delimiter = "\t"
     labeldelimiter = ":"
 
     def __init__(self, strict=False, delimiter=None, labeldelimiter=None):
         # type: (bool, Optional[Text], Optional[Text]) -> None
+        """Initialize.
+
+        TODO: Write about strict mode
+
+        :param strict: Enable strict mode
+        :param delimiter: Set custom field delimiter
+        :param labeldelimiter: Set custom label delimiter
+        """
         self.strict = strict
         if delimiter is not None:
             self.delimiter = delimiter
@@ -54,6 +92,11 @@ class StrLineParser(object):
 
     def parse(self, line):
         # type: (Text,) -> Iterable[Tuple[Text, Optional[Text]]]
+        """Parse one line.
+
+        :param line: Line to parse.
+        :returns: Parsed object.
+        """
         if line.endswith("\r\n"):
             line = line[:-2]
         elif line.endswith("\n"):
