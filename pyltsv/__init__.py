@@ -1,10 +1,9 @@
 """Python Library for LTSV."""
 
-from typing import Iterable
 from typing import IO
+from typing import Iterable
 from typing import Optional
 from typing import Text
-from typing import TextIO
 from typing import Tuple
 
 
