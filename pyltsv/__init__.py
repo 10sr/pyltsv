@@ -2,20 +2,13 @@
 
 
 def reader(ltsvfile, strict=False, delimiter=None, labeldelimiter=None):
-    return StrReader(ltsvfile, strict)
+    return StrReader(ltsvfile, StrLineParser(strict, delimiter, labeldelimiter))
 
 
 class StrReader(object):
-    delimiter = "\t"
-    labeldelimiter = ":"
-
-    def __init__(self, ltsvfile, strict, delimiter=None, labeldelimiter=None):
-        self.ltsvfile = ltsvfile
-        self.strict = strict
-        if delimiter is not None:
-            self.delimiter = delimiter
-        if labeldelimiter is not None:
-            self.labeldelimiter = labeldelimiter
+    def __init__(self, ltsvfile, parser):
+        self._ltsvfile = ltsvfile
+        self._parser = parser
         return
 
     def __iter__(self):
@@ -28,34 +21,36 @@ class StrReader(object):
         return r
 
     def readline(self):
-        line = self.ltsvfile.readline()
+        line = self._ltsvfile.readline()
         if line == "":
             return None
-        return _parse(line, self.strict, self.delimiter, self.labeldelimiter)
+        return self._parser.parse(line)
 
 
-def _parse(line, strict=False, delimiter="\t", labeldelimiter=":"):
-    if line.endswith("\r\n"):
-        line = line[:-2]
-    elif line.endswith("\n"):
-        line = line[:-1]
+class StrLineParser(object):
+    strict = False
+    delimiter = "\t"
+    labeldelimiter = ":"
 
-    fields = line.split(delimiter)
-    r = []
-    for field in fields:
-        if field == "":
-            continue
-        k, _, v = field.partition(labeldelimiter)
-        r.append((k, v))
-    return r
+    def __init__(self, strict=False, delimiter=None, labeldelimiter=None):
+        self.strict = strict
+        if delimiter is not None:
+            self.delimiter = delimiter
+        if labeldelimiter is not None:
+            self.labeldelimiter = labeldelimiter
+        return
 
-def test_1():
-    from io import StringIO
-    f = StringIO("a:1\tb:2\na:3\tb:4")
-    for d in reader(f):
-        print(dict(d))
-    return
+    def parse(self, line):
+        if line.endswith("\r\n"):
+            line = line[:-2]
+        elif line.endswith("\n"):
+            line = line[:-1]
 
-
-if __name__ == "__main__":
-    test_1()
+        fields = line.split(self.delimiter)
+        r = []
+        for field in fields:
+            if field == "":
+                continue
+            k, _, v = field.partition(self.labeldelimiter)
+            r.append((k, v))
+        return r
