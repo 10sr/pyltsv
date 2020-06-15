@@ -88,7 +88,6 @@ jobs:
         run: |
           set -eux
           python --version
-          flake8 --version
           make test
       - name: Run codecov
         uses: codecov/codecov-action@v1
@@ -118,5 +117,8 @@ jobs:
           set -eux
           pip install .[dev] .[linter]
       - name: Run linter
-        run: make lint
+        run: |
+          set -eux
+          flake8 --version
+          make lint
 
