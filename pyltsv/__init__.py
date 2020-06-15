@@ -54,6 +54,8 @@ class StrReader(object):
             raise StopIteration
         return r
 
+    next = __next__  # For Python 2.7 compatibility
+
     def readline(self):
         # type: () -> Optional[Iterable[Tuple[Text, Optional[Text]]]]
         """Read one line and return parsed object.
