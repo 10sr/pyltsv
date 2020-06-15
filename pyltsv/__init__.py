@@ -1,26 +1,37 @@
 """Python Library for LTSV."""
 
+from typing import Iterable
+from typing import Optional
+from typing import Text
+from typing import TextIO
+from typing import Tuple
+
 
 def reader(ltsvfile, strict=False, delimiter=None, labeldelimiter=None):
+    # type: (TextIO, bool, Optional[Text], Optional[Text]) -> StrReader
     return StrReader(ltsvfile, StrLineParser(strict, delimiter, labeldelimiter))
 
 
 class StrReader(object):
     def __init__(self, ltsvfile, parser):
+        # type: (TextIO, StrLineParser) -> None
         self._ltsvfile = ltsvfile
         self._parser = parser
         return
 
     def __iter__(self):
+        # type: () -> StrReader
         return self
 
     def __next__(self):
+        # type: () -> Iterable[Tuple[Text, Optional[Text]]]
         r = self.readline()
         if r is None:
             raise StopIteration
         return r
 
     def readline(self):
+        # type: () -> Optional[Iterable[Tuple[Text, Optional[Text]]]]
         line = self._ltsvfile.readline()
         if line == "":
             return None
@@ -33,6 +44,7 @@ class StrLineParser(object):
     labeldelimiter = ":"
 
     def __init__(self, strict=False, delimiter=None, labeldelimiter=None):
+        # type: (bool, Optional[Text], Optional[Text]) -> None
         self.strict = strict
         if delimiter is not None:
             self.delimiter = delimiter
@@ -41,6 +53,7 @@ class StrLineParser(object):
         return
 
     def parse(self, line):
+        # type: (Text,) -> Iterable[Tuple[Text, Optional[Text]]]
         if line.endswith("\r\n"):
             line = line[:-2]
         elif line.endswith("\n"):
