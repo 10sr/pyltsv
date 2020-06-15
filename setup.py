@@ -2,10 +2,13 @@
 
 """Setup script."""
 
+from typing import Text
+
 from setuptools import setup
 
 
-def _get_version() -> str:
+def _get_version():
+    # type: () -> Text
     with open("pyltsv/_version.py") as f:
         for line in f:
             if line.startswith("__version__"):
