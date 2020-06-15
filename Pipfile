@@ -4,7 +4,7 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [packages]
-pyltsv = {editable = true,extras = ["dev"],path = "."}
+pyltsv = {editable = true,extras = ["dev", "linter"],path = "."}
 
 [pipenv]
 allow_prereleases = true
