@@ -33,4 +33,7 @@ class TestBreader(unittest.TestCase):
         f = BytesIO(b"a:1\tb:2\n\na:3\tb:4\n")
         ret = list(pyltsv.breader(f))
         self.assertEqual(len(ret), 3)
+        self.assertEqual(list(ret[0]), [(b"a", b"1"), (b"b", b"2")])
+        self.assertEqual(list(ret[1]), [])
+        self.assertEqual(list(ret[2]), [(b"a", b"3"), (b"b", b"4")])
         return
