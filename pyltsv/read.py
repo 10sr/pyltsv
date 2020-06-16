@@ -1,10 +1,12 @@
 """LTSV reader."""
 
-from typing import IO
+from typing import Generic
+from typing import IO  # noqa: I001  # isort sorts this wrongly
 from typing import Iterable
 from typing import Optional
 from typing import Text
 from typing import Tuple
+from typing import TypeVar
 
 
 def reader(ltsvfile, strict=False, delimiter=None, labeldelimiter=None):
@@ -20,22 +22,25 @@ def reader(ltsvfile, strict=False, delimiter=None, labeldelimiter=None):
     return StrReader(ltsvfile, StrLineParser(strict, delimiter, labeldelimiter))
 
 
-class StrReader(object):
-    """LTSV reader for unicode str."""
+T = TypeVar("T", Text, bytes)
+
+
+class BaseReader(Generic[T]):
+    """Base LTSV reader."""
 
     def __init__(self, ltsvfile, parser):
-        # type: (IO[Text], StrLineParser) -> None
+        # type: (IO[T], BaseLineParser[T]) -> None
         """Initialize.
 
         :param ltsvfile: File-like object to read input
-        :param parser: StrLineParser object
+        :param parser: BaseLineParser object
         """
-        self._ltsvfile = ltsvfile
-        self._parser = parser
+        self._ltsvfile = ltsvfile  # type: IO[T]
+        self._parser = parser  # type: BaseLineParser[T]
         return
 
     def __iter__(self):
-        # type: () -> StrReader
+        # type: () -> BaseReader[T]
         """Get iter object.
 
         :returns: Iter object
@@ -43,7 +48,7 @@ class StrReader(object):
         return self
 
     def __next__(self):
-        # type: () -> Iterable[Tuple[Text, Optional[Text]]]
+        # type: () -> Iterable[Tuple[T, Optional[T]]]
         """Return next element.
 
         :returns: Parsed object
@@ -57,26 +62,31 @@ class StrReader(object):
     next = __next__  # For Python 2.7 compatibility
 
     def readline(self):
-        # type: () -> Optional[Iterable[Tuple[Text, Optional[Text]]]]
+        # type: () -> Optional[Iterable[Tuple[T, Optional[T]]]]
         """Read one line and return parsed object.
 
         :returns: parsed object or None for EOF
         """
         line = self._ltsvfile.readline()
-        if line == "":
+        if len(line) == 0:
             return None
         return self._parser.parse(line)
 
 
-class StrLineParser(object):
-    """LTSV line parser."""
+class StrReader(BaseReader[Text]):
+    """LTSV reader for unicode str."""
+
+
+U = TypeVar("U", Text, bytes)
+
+
+class BaseLineParser(Generic[U]):
+    """Base LTSV line parser."""
 
     strict = False
-    delimiter = u"\t"
-    labeldelimiter = u":"
 
     def __init__(self, strict=False, delimiter=None, labeldelimiter=None):
-        # type: (bool, Optional[Text], Optional[Text]) -> None
+        # type: (bool, Optional[U], Optional[U]) -> None
         """Initialize.
 
         TODO: Write about strict mode
@@ -87,28 +97,46 @@ class StrLineParser(object):
         """
         self.strict = strict
         if delimiter is not None:
-            self.delimiter = delimiter
+            self.delimiter = delimiter  # type: U
         if labeldelimiter is not None:
-            self.labeldelimiter = labeldelimiter
+            self.labeldelimiter = labeldelimiter  # type: U
         return
 
     def parse(self, line):
-        # type: (Text,) -> Iterable[Tuple[Text, Optional[Text]]]
+        # type: (U,) -> Iterable[Tuple[U, Optional[U]]]
         """Parse one line.
 
         :param line: Line to parse.
         :returns: Parsed object.
         """
-        if line.endswith("\r\n"):
-            line = line[:-2]
-        elif line.endswith("\n"):
-            line = line[:-1]
+        line = self._strip_eol(line)
 
         fields = line.split(self.delimiter)
         r = []
         for field in fields:
-            if field == "":
+            if len(field) == 0:
                 continue
             k, _, v = field.partition(self.labeldelimiter)
             r.append((k, v))
         return r
+
+    @staticmethod
+    def _strip_eol(line):
+        # type: (U,) -> U
+        raise NotImplementedError
+
+
+class StrLineParser(BaseLineParser[Text]):
+    """LTSV line parser."""
+
+    delimiter = u"\t"
+    labeldelimiter = u":"
+
+    @staticmethod
+    def _strip_eol(line):
+        # type: (Text,) -> Text
+        if line.endswith(u"\r\n"):
+            line = line[:-2]
+        elif line.endswith(u"\n"):
+            line = line[:-1]
+        return line
