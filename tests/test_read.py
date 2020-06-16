@@ -23,6 +23,17 @@ class TestReader(unittest.TestCase):
         self.assertEqual(list(ret[2]), [(u"a", u"3"), (u"b", u"4")])
         return
 
+    def test_reader_readline(self):
+        # type: () -> None
+        """Test readline of reader."""
+        f = StringIO(u"a:1\tb:2\n\na:3\tb:4\n")
+        r = pyltsv.reader(f)
+        self.assertEqual(list(r.readline() or []), [(u"a", u"1"), (u"b", u"2")])
+        self.assertEqual(list(r.readline() or []), [])
+        self.assertEqual(list(r.readline() or []), [(u"a", u"3"), (u"b", u"4")])
+        self.assertEqual(r.readline(), None)  # end of file
+        return
+
 
 class TestBreader(unittest.TestCase):
     """Test breader."""
