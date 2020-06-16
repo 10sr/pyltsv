@@ -244,6 +244,13 @@
             ],
             "version": "==0.4.3"
         },
+        "parameterized": {
+            "hashes": [
+                "sha256:190f8cc7230eee0b56b30d7f074fd4d165f7c45e6077582d0813c8557e738490",
+                "sha256:59ab908e31c01505a987a2be78854e19cb1630c047bbab7848169c371d614d56"
+            ],
+            "version": "==0.7.4"
+        },
         "pathspec": {
             "hashes": [
                 "sha256:7d91249d21749788d07a2d0f94147accd8f845507400749ea19c1ec9054a12b0",
@@ -395,13 +402,13 @@
             "version": "==1.12.1"
         },
         "zipp": {
-            "extras": [],
-            "hashes": [
-                "sha256:aa36550ff0c0b7ef7fa639055d797116ee891440eac1a56f378e2d3179e0320b",
-                "sha256:c599e4d75c98f6798c509911d08a22e6c021d074469042177c8c86fb92eefd96"
+            "editable": true,
+            "extras": [
+                "dev",
+                "linter"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==3.1.0"
+            "path": "."
         }
     },
     "develop": {}

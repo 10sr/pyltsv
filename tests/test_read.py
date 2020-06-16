@@ -1,8 +1,14 @@
+# mypy: allow-untyped-decorators
 """Test reader."""
-
 
 import unittest
 
+from typing import List
+from typing import Optional
+from typing import Text
+from typing import Tuple
+
+from parameterized import parameterized
 from six import BytesIO
 from six import StringIO
 
@@ -55,10 +61,18 @@ class TestBreader(unittest.TestCase):
 class TestStrLineParser(unittest.TestCase):
     """Test StrLineParser."""
 
-    def test_parse(self):
-        # type: () -> None
-        """Test basic usage of parse."""
+    @parameterized.expand(
+        [("basic", u"a:1\tb:2\n", [(u"a", u"1"), (u"b", u"2")]),]
+    )
+    def test_parse(self, name, input, expected):
+        # type: (str, Text, List[Tuple[Text, Optional[Text]]]) -> None
+        """Test basic usage of parse.
+
+        :param name: Name of this parameter
+        :param input: Input LTSV line
+        :param expected: Expected parsed result
+        """
         parser = StrLineParser()
-        ret = parser.parse("a:1\tb:2\n")
-        self.assertEqual(list(ret), [(u"a", u"1"), (u"b", u"2")])
+        actual = parser.parse(input)
+        self.assertEqual(list(actual), expected)
         return
