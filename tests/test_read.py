@@ -83,8 +83,7 @@ class TestStrLineParser(unittest.TestCase):
         :param input: Input LTSV line
         :param expected: Expected parsed result
         """
-        parser = StrLineParser()
-        actual = parser.parse(input)
+        actual = StrLineParser().parse(input)
         self.assertEqual(list(actual), expected)
         return
 
@@ -95,7 +94,6 @@ class TestBytesLineParser(unittest.TestCase):
     def test_parse(self):
         # type: () -> None
         """Test basic usage of parse."""
-        parser = BytesLineParser()
-        actual = parser.parse(b"a:1\tb:2\n")
+        actual = BytesLineParser().parse(b"a:1\tb:2\n")
         self.assertEqual(list(actual), [(b"a", b"1"), (b"b", b"2")])
         return
