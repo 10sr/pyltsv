@@ -135,7 +135,7 @@ class BaseLineParser(Generic[U]):
         """
         for eol in self.eols:
             if line.endswith(eol):
-                line = line[: len(eol)]
+                line = line[: len(eol) * (-1)]
                 break
 
         fields = line.split(self.delimiter)
