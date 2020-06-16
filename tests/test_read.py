@@ -21,7 +21,7 @@ from pyltsv.read import StrLineParser
 class TestReader(unittest.TestCase):
     """Test reader."""
 
-    def test_reader(self):
+    def test_iter(self):
         # type: () -> None
         """Test basic usage of reader."""
         f = StringIO(u"a:1\tb:2\n\na:3\tb:4\n")
@@ -32,7 +32,7 @@ class TestReader(unittest.TestCase):
         self.assertEqual(list(ret[2]), [(u"a", u"3"), (u"b", u"4")])
         return
 
-    def test_reader_readline(self):
+    def test_readline(self):
         # type: () -> None
         """Test readline of reader."""
         f = StringIO(u"a:1\tb:2\n\na:3\tb:4\n")
@@ -47,7 +47,7 @@ class TestReader(unittest.TestCase):
 class TestBreader(unittest.TestCase):
     """Test breader."""
 
-    def test_breader(self):
+    def test_iter(self):
         # type: () -> None
         """Test basic usage of breader."""
         f = BytesIO(b"a:1\tb:2\n\na:3\tb:4\n")
