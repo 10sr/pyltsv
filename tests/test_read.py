@@ -14,20 +14,23 @@ class TestReader(unittest.TestCase):
 
     def test_reader(self):
         # type: () -> None
-        """Text basic usage of reader."""
-        f = StringIO(u"a:1\tb:2\na:3\tb:4")
+        """Test basic usage of reader."""
+        f = StringIO(u"a:1\tb:2\n\na:3\tb:4\n")
         ret = list(pyltsv.reader(f))
-        self.assertEqual(len(ret), 2)
+        self.assertEqual(len(ret), 3)
+        self.assertEqual(list(ret[0]), [(u"a", u"1"), (u"b", u"2")])
+        self.assertEqual(list(ret[1]), [])
+        self.assertEqual(list(ret[2]), [(u"a", u"3"), (u"b", u"4")])
         return
 
 
 class TestBreader(unittest.TestCase):
     """Test breader."""
 
-    def test_reader(self):
+    def test_breader(self):
         # type: () -> None
-        """Text basic usage of reader."""
-        f = BytesIO(b"a:1\tb:2\na:3\tb:4")
+        """Test basic usage of breader."""
+        f = BytesIO(b"a:1\tb:2\n\na:3\tb:4\n")
         ret = list(pyltsv.breader(f))
-        self.assertEqual(len(ret), 2)
+        self.assertEqual(len(ret), 3)
         return
