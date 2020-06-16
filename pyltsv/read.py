@@ -147,7 +147,7 @@ class BaseLineParser(Generic[U]):
         for field in fields:
             if len(field) == 0:
                 continue
-            elif self.labeldelimiter in field:
+            if self.labeldelimiter in field:
                 k, _, v = field.partition(self.labeldelimiter)
                 r.append((k, v))
             else:
