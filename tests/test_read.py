@@ -14,6 +14,7 @@ from six import StringIO
 
 import pyltsv
 
+from pyltsv.read import BytesLineParser
 from pyltsv.read import StrLineParser
 
 
@@ -85,4 +86,16 @@ class TestStrLineParser(unittest.TestCase):
         parser = StrLineParser()
         actual = parser.parse(input)
         self.assertEqual(list(actual), expected)
+        return
+
+
+class TestBytesLineParser(unittest.TestCase):
+    """Test BytesLineParser."""
+
+    def test_parse(self):
+        # type: () -> None
+        """Test basic usage of parse."""
+        parser = BytesLineParser()
+        actual = parser.parse(b"a:1\tb:2\n")
+        self.assertEqual(list(actual), [(b"a", b"1"), (b"b", b"2")])
         return
