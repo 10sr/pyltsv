@@ -70,6 +70,8 @@ class TestStrLineParser(unittest.TestCase):
             ("emptyvalue", u"a:\n", [(u"a", u"")]),
             ("emptykey", u":1\n", [(u"", u"1")]),
             ("blankfield", u"\ta:1\t\tb:2\n", [(u"a", u"1"), (u"b", u"2")],),
+            # When directly passed newlines are allowed when strict=False
+            ("newlineinside", u"\ta:1\n\t\tb:2\n", [(u"a", u"1\n"), (u"b", u"2")],),
         ]
     )
     def test_parse(self, name, input, expected):
