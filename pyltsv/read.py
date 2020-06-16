@@ -85,8 +85,8 @@ class BaseLineParser(Generic[U]):
 
     strict = False
 
-    def __init__(self, strict=False, delimiter=None, labeldelimiter=None):
-        # type: (bool, Optional[U], Optional[U]) -> None
+    def __init__(self, strict=False, delimiter=None, labeldelimiter=None, eols=None):
+        # type: (bool, Optional[U], Optional[U], Optional[Iterable[U]]) -> None
         """Initialize.
 
         TODO: Write about strict mode
@@ -94,12 +94,15 @@ class BaseLineParser(Generic[U]):
         :param strict: Enable strict mode
         :param delimiter: Set custom field delimiter
         :param labeldelimiter: Set custom label delimiter
+        :param eols: Possible eol values
         """
         self.strict = strict
         if delimiter is not None:
             self.delimiter = delimiter  # type: U
         if labeldelimiter is not None:
             self.labeldelimiter = labeldelimiter  # type: U
+        if eols is not None:
+            self.eols = eols  # type: Iterable[U]
         return
 
     def parse(self, line):
@@ -109,7 +112,10 @@ class BaseLineParser(Generic[U]):
         :param line: Line to parse.
         :returns: Parsed object.
         """
-        line = self._strip_eol(line)
+        for eol in self.eols:
+            if line.endswith(eol):
+                line = line[: len(eol)]
+                break
 
         fields = line.split(self.delimiter)
         r = []
@@ -120,23 +126,10 @@ class BaseLineParser(Generic[U]):
             r.append((k, v))
         return r
 
-    @staticmethod
-    def _strip_eol(line):
-        # type: (U,) -> U
-        raise NotImplementedError
-
 
 class StrLineParser(BaseLineParser[Text]):
     """LTSV line parser."""
 
     delimiter = u"\t"
     labeldelimiter = u":"
-
-    @staticmethod
-    def _strip_eol(line):
-        # type: (Text,) -> Text
-        if line.endswith(u"\r\n"):
-            line = line[:-2]
-        elif line.endswith(u"\n"):
-            line = line[:-1]
-        return line
+    eols = (u"\r\n", u"\n")
