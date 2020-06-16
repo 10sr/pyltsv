@@ -22,6 +22,19 @@ def reader(ltsvfile, strict=False, delimiter=None, labeldelimiter=None):
     return StrReader(ltsvfile, StrLineParser(strict, delimiter, labeldelimiter))
 
 
+def breader(ltsvfile, strict=False, delimiter=None, labeldelimiter=None):
+    # type: (IO[bytes], bool, Optional[bytes], Optional[bytes]) -> BytesReader
+    """Get LTSV reader for bytes.
+
+    :param ltsvfile: File-like object to read input
+    :param strict: Enable strict parsing
+    :param delimiter: Set custom field delimiter
+    :param labeldelimiter: Set custom label delimiter
+    :returns: BytesReader object
+    """
+    return BytesReader(ltsvfile, BytesLineParser(strict, delimiter, labeldelimiter))
+
+
 T = TypeVar("T", Text, bytes)
 
 
@@ -77,6 +90,10 @@ class StrReader(BaseReader[Text]):
     """LTSV reader for unicode str."""
 
 
+class BytesReader(BaseReader[bytes]):
+    """LTSV reader for bytes."""
+
+
 U = TypeVar("U", Text, bytes)
 
 
@@ -128,8 +145,16 @@ class BaseLineParser(Generic[U]):
 
 
 class StrLineParser(BaseLineParser[Text]):
-    """LTSV line parser."""
+    """LTSV line parser for unicode str."""
 
     delimiter = u"\t"
     labeldelimiter = u":"
     eols = (u"\r\n", u"\n")
+
+
+class BytesLineParser(BaseLineParser[bytes]):
+    """LTSV line parser for bytes."""
+
+    delimiter = b"\t"
+    labeldelimiter = b":"
+    eols = (b"\r\n", b"\n")
