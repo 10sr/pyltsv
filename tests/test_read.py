@@ -87,6 +87,23 @@ class TestStrLineParser(unittest.TestCase):
         self.assertEqual(list(actual), expected)
         return
 
+    @parameterized.expand(
+        [("basic", u"a=1,b=3|", [(u"a", u"1"), (u"b", u"3")]),]
+    )
+    def test_parse_custom_params(self, name, input, expected):
+        # type: (str, Text, List[Tuple[Text, Optional[Text]]]) -> None
+        """Test parser with custom parameters.
+
+        :param name: Name of this parameter
+        :param input: Input line
+        :param expected: Expected parsed result
+        """
+        actual = StrLineParser(delimiter=u",", labeldelimiter=u"=", eols=(u"|",)).parse(
+            input
+        )
+        self.assertEqual(list(actual), expected)
+        return
+
 
 class TestBytesLineParser(unittest.TestCase):
     """Test BytesLineParser."""
