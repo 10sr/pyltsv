@@ -3,6 +3,7 @@
 from typing import Generic
 from typing import IO  # noqa: I001  # isort sorts this wrongly
 from typing import Iterable
+from typing import List
 from typing import Optional
 from typing import Text
 from typing import Tuple
@@ -138,13 +139,19 @@ class BaseLineParser(Generic[U]):
                 line = line[: len(eol) * (-1)]
                 break
 
+        if len(line) == 0:
+            return []
+
         fields = line.split(self.delimiter)
-        r = []
+        r = []  # type: List[Tuple[U, Optional[U]]]
         for field in fields:
             if len(field) == 0:
-                continue
-            k, _, v = field.partition(self.labeldelimiter)
-            r.append((k, v))
+                r.append((field, None))
+            elif self.labeldelimiter in field:
+                k, _, v = field.partition(self.labeldelimiter)
+                r.append((k, v))
+            else:
+                r.append((field, None))
         return r
 
 
