@@ -8,6 +8,8 @@ from six import StringIO
 
 import pyltsv
 
+from pyltsv.read import StrLineParser
+
 
 class TestReader(unittest.TestCase):
     """Test reader."""
@@ -47,4 +49,16 @@ class TestBreader(unittest.TestCase):
         self.assertEqual(list(ret[0]), [(b"a", b"1"), (b"b", b"2")])
         self.assertEqual(list(ret[1]), [])
         self.assertEqual(list(ret[2]), [(b"a", b"3"), (b"b", b"4")])
+        return
+
+
+class TestStrLineParser(unittest.TestCase):
+    """Test StrLineParser."""
+
+    def test_parse(self):
+        # type: () -> None
+        """Test basic usage of parse."""
+        parser = StrLineParser()
+        ret = parser.parse("a:1\tb:2\n")
+        self.assertEqual(list(ret), [(u"a", u"1"), (u"b", u"2")])
         return
