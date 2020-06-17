@@ -105,6 +105,9 @@ class BaseLineParser(Generic[U]):
     """Base LTSV line parser."""
 
     strict = False
+    delimiter = None  # type: U
+    labeldelimiter = None  # type: U
+    eols = None  # type: Iterable[U]
     _empty_value = None  # type: U
 
     def __init__(self, strict=False, delimiter=None, labeldelimiter=None, eols=None):
@@ -120,11 +123,11 @@ class BaseLineParser(Generic[U]):
         """
         self.strict = strict
         if delimiter is not None:
-            self.delimiter = delimiter  # type: U
+            self.delimiter = delimiter
         if labeldelimiter is not None:
-            self.labeldelimiter = labeldelimiter  # type: U
+            self.labeldelimiter = labeldelimiter
         if eols is not None:
-            self.eols = eols  # type: Iterable[U]
+            self.eols = eols
         return
 
     def parse(self, line):
