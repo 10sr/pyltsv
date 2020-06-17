@@ -3,7 +3,6 @@
 from typing import Generic
 from typing import IO  # noqa: I001  # isort sorts this wrongly
 from typing import Iterable
-from typing import List
 from typing import Optional
 from typing import Text
 from typing import Tuple
@@ -66,7 +65,7 @@ class BaseReader(Generic[T]):
         return self
 
     def __next__(self):
-        # type: () -> Iterable[Tuple[T, Optional[T]]]
+        # type: () -> Iterable[Tuple[T, T]]
         """Return next element.
 
         :returns: Parsed object
@@ -80,7 +79,7 @@ class BaseReader(Generic[T]):
     next = __next__  # For Python 2.7 compatibility
 
     def readline(self):
-        # type: () -> Optional[Iterable[Tuple[T, Optional[T]]]]
+        # type: () -> Optional[Iterable[Tuple[T, T]]]
         """Read one line and return parsed object.
 
         :returns: parsed object or None for EOF
@@ -106,6 +105,7 @@ class BaseLineParser(Generic[U]):
     """Base LTSV line parser."""
 
     strict = False
+    _empty_value = None  # type: U
 
     def __init__(self, strict=False, delimiter=None, labeldelimiter=None, eols=None):
         # type: (bool, Optional[U], Optional[U], Optional[Iterable[U]]) -> None
@@ -128,7 +128,7 @@ class BaseLineParser(Generic[U]):
         return
 
     def parse(self, line):
-        # type: (U,) -> Iterable[Tuple[U, Optional[U]]]
+        # type: (U,) -> Iterable[Tuple[U, U]]
         """Parse one line.
 
         :param line: Line to parse.
@@ -143,7 +143,7 @@ class BaseLineParser(Generic[U]):
             return []
 
         fields = line.split(self.delimiter)
-        r = []  # type: List[Tuple[U, Optional[U]]]
+        r = []
         for field in fields:
             if len(field) == 0:
                 continue
@@ -151,7 +151,7 @@ class BaseLineParser(Generic[U]):
                 k, _, v = field.partition(self.labeldelimiter)
                 r.append((k, v))
             else:
-                r.append((field, None))
+                r.append((field, self._empty_value))
         return r
 
 
@@ -161,6 +161,7 @@ class StrLineParser(BaseLineParser[Text]):
     delimiter = u"\t"
     labeldelimiter = u":"
     eols = (u"\r\n", u"\n")
+    _empty_value = u""
 
 
 class BytesLineParser(BaseLineParser[bytes]):
@@ -169,3 +170,4 @@ class BytesLineParser(BaseLineParser[bytes]):
     delimiter = b"\t"
     labeldelimiter = b":"
     eols = (b"\r\n", b"\n")
+    _empty_value = b""

@@ -67,7 +67,7 @@ class TestStrLineParser(unittest.TestCase):
             ("basic", u"a:1\tb:2\n", [(u"a", u"1"), (u"b", u"2")]),
             ("crlf", u"a:1\tb:2\r\n", [(u"a", u"1"), (u"b", u"2")]),
             ("empty", u"\n", []),
-            ("labelonly", u"a\n", [(u"a", None)]),
+            ("labelonly", u"a\n", [(u"a", "")]),
             ("emptyvalue", u"a:\n", [(u"a", u"")]),
             ("emptykey", u":1\n", [(u"", u"1")]),
             ("blankfield", u"\ta:1\t\tb:2\n", [(u"a", u"1"), (u"b", u"2")],),
