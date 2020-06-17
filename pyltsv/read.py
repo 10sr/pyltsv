@@ -128,10 +128,10 @@ class BaseLineParser(Generic[U]):
             self.input = input_
             return
 
-    class EmptyFieldError(ParseError):
+    class EmptyFieldParseError(ParseError):
         """Empty field was found in input."""
 
-    class LabelOnlyError(ParseError):
+    class LabelOnlyParseError(ParseError):
         """Label delimiter was not found in field."""
 
     def __init__(self, strict=False, delimiter=None, labeldelimiter=None, eols=None):
@@ -170,8 +170,8 @@ class BaseLineParser(Generic[U]):
 
         :param line: Line to parse.
         :returns: Parsed object.
-        :raises EmptyFieldError: Empty field found in input
-        :raises LabelOnlyError: label delimiter was not found in field
+        :raises EmptyFieldParseError: Empty field found in input
+        :raises LabelOnlyParseError: label delimiter was not found in field
         """
         for eol in self.eols:
             if line.endswith(eol):
@@ -186,14 +186,14 @@ class BaseLineParser(Generic[U]):
         for field in fields:
             if len(field) == 0:
                 if self.strict:
-                    raise self.EmptyFieldError("Empty field found in input", line)
+                    raise self.EmptyFieldParseError("Empty field found in input", line)
                 continue
             if self.labeldelimiter in field:
                 k, _, v = field.partition(self.labeldelimiter)
                 r.append((k, v))
             else:
                 if self.strict:
-                    raise self.LabelOnlyError(
+                    raise self.LabelOnlyParseError(
                         "Label delimiter was not found in field", line
                     )
                 r.append((field, self._empty_value))
