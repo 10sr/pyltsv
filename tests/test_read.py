@@ -43,6 +43,14 @@ class TestReader(unittest.TestCase):
         self.assertEqual(r.readline(), None)  # end of file
         return
 
+    def test_invalid_strict_setup(self):
+        # type: () -> None
+        """Test invalid setup of strict mode."""
+        f = StringIO(u"a:1\tb:2\n\na:3\tb:4\n")
+        with self.assertRaises(pyltsv.ParserConfigError):
+            _ = pyltsv.reader(f, strict=True, delimiter=",")
+        return
+
 
 class TestBreader(unittest.TestCase):
     """Test breader."""
