@@ -7,6 +7,7 @@ from typing import Optional
 from typing import Text
 from typing import Tuple
 from typing import TypeVar
+from typing import Union
 
 
 def reader(ltsvfile, strict=False, delimiter=None, labeldelimiter=None, eols=None):
@@ -113,6 +114,26 @@ class BaseLineParser(Generic[U]):
     class ParserConfigError(ValueError):
         """Invalid parser configuration given."""
 
+    class ParseError(ValueError):
+        """Error was found while parsing LTSV input."""
+
+        def __init__(self, msg, input_):
+            # type: (Text, Union[Text, bytes]) -> None
+            """Initialize.
+
+            :param msg: Error message
+            :param input_: Input LTSV line
+            """
+            super(BaseLineParser.ParseError, self).__init__(msg, input_)
+            self.input = input_
+            return
+
+    class EmptyFieldError(ParseError):
+        """Empty field was found in input."""
+
+    class LabelOnlyError(ParseError):
+        """Label delimiter was not found in field."""
+
     def __init__(self, strict=False, delimiter=None, labeldelimiter=None, eols=None):
         # type: (bool, Optional[U], Optional[U], Optional[Iterable[U]]) -> None
         """Initialize.
@@ -145,8 +166,12 @@ class BaseLineParser(Generic[U]):
         # type: (U,) -> Iterable[Tuple[U, U]]
         """Parse one line.
 
+        Errors will be raised only when strict is set to True.
+
         :param line: Line to parse.
         :returns: Parsed object.
+        :raises EmptyFieldError: Empty field found in input
+        :raises LabelOnlyError: label delimiter was not found in field
         """
         for eol in self.eols:
             if line.endswith(eol):
@@ -160,11 +185,17 @@ class BaseLineParser(Generic[U]):
         r = []
         for field in fields:
             if len(field) == 0:
+                if self.strict:
+                    raise self.EmptyFieldError("Empty field found in input", line)
                 continue
             if self.labeldelimiter in field:
                 k, _, v = field.partition(self.labeldelimiter)
                 r.append((k, v))
             else:
+                if self.strict:
+                    raise self.LabelOnlyError(
+                        "Label delimiter was not found in field", line
+                    )
                 r.append((field, self._empty_value))
         return r
 
