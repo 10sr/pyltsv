@@ -110,6 +110,9 @@ class BaseLineParser(Generic[U]):
     eols = None  # type: Iterable[U]
     _empty_value = None  # type: U
 
+    class ParserConfigError(ValueError):
+        """Invalid parser configuration given."""
+
     def __init__(self, strict=False, delimiter=None, labeldelimiter=None, eols=None):
         # type: (bool, Optional[U], Optional[U], Optional[Iterable[U]]) -> None
         """Initialize.
@@ -120,8 +123,16 @@ class BaseLineParser(Generic[U]):
         :param delimiter: Set custom field delimiter
         :param labeldelimiter: Set custom label delimiter
         :param eols: Possible eol values
+        :raises ParserConfigError: Invalid parser configuration given
         """
         self.strict = strict
+        if self.strict and (
+            delimiter is not None or labeldelimiter is not None or eols is not None
+        ):
+            raise self.ParserConfigError(
+                "Cannot change parser configs when strict=True"
+            )
+
         if delimiter is not None:
             self.delimiter = delimiter
         if labeldelimiter is not None:

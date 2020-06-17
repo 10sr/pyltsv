@@ -104,6 +104,13 @@ class TestStrLineParser(unittest.TestCase):
         self.assertEqual(list(actual), expected)
         return
 
+    def test_parse_strict_invalid(self):
+        # type: () -> None
+        """Test parser with strict mode enabled and invalid config given."""
+        with self.assertRaises(StrLineParser.ParserConfigError):
+            _ = StrLineParser(strict=True, delimiter=u",")
+        return
+
 
 class TestBytesLineParser(unittest.TestCase):
     """Test BytesLineParser."""
