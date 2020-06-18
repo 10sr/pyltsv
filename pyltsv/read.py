@@ -2,6 +2,8 @@
 
 import string
 
+from typing import ClassVar
+from typing import FrozenSet
 from typing import Generic
 from typing import IO  # noqa: I001  # isort sorts this wrongly
 from typing import Iterable
@@ -219,8 +221,9 @@ class BaseLineParser(Generic[U]):
                 r.append((field, self._empty_value))
         return r
 
-    _accept_label_chars = None  # type: U
-    _reject_value_chars = None  # type: U
+    # For U==text, use FrozenSet[Text], for U==bytes, use FrozenSet[int]
+    _accept_label_chars = None  # type: ClassVar[FrozenSet[Union[Text, int]]]
+    _reject_value_chars = None  # type: ClassVar[FrozenSet[Union[Text, int]]]
 
     def _is_strictly_valid_label(self, label):
         # type: (U,) -> bool
@@ -258,10 +261,10 @@ class StrLineParser(BaseLineParser[Text]):
     _empty_value = u""
 
     # [0-9A-Za-z_.-]
-    _accept_label_chars = string.ascii_letters + string.digits + u"_.-"
+    _accept_label_chars = frozenset(string.ascii_letters + string.digits + u"_.-")
     # Not %x01-08 / %x0B / %x0C / %x0E-FF
     # NULL, \t, \n, \r
-    _reject_value_chars = u"\x00\x09\x0a\x0d"
+    _reject_value_chars = frozenset(u"\x00\x09\x0a\x0d")
 
 
 class BytesLineParser(BaseLineParser[bytes]):
@@ -273,9 +276,9 @@ class BytesLineParser(BaseLineParser[bytes]):
     _empty_value = b""
 
     # [0-9A-Za-z_.-]
-    _accept_label_chars = (string.ascii_letters + string.digits + u"_.-").encode(
-        "ascii"
+    _accept_label_chars = frozenset(
+        (string.ascii_letters + string.digits + u"_.-").encode("ascii")
     )
     # Not %x01-08 / %x0B / %x0C / %x0E-FF
     # NULL, \t, \n, \r
-    _reject_value_chars = b"\x00\x09\x0a\x0d"
+    _reject_value_chars = frozenset(b"\x00\x09\x0a\x0d")
