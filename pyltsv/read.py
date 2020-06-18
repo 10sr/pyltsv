@@ -136,8 +136,8 @@ class BaseLineParser(Generic[U]):
     class LabelOnlyParseError(ParseError):
         """Label delimiter was not found in field."""
 
-    class InvalidKeyParseError(ParseError):
-        """Invalid key was found in field."""
+    class InvalidLabelParseError(ParseError):
+        """Invalid label was found in field."""
 
     def __init__(self, strict=False, delimiter=None, labeldelimiter=None, eols=None):
         # type: (bool, Optional[U], Optional[U], Optional[Iterable[U]]) -> None
@@ -177,7 +177,7 @@ class BaseLineParser(Generic[U]):
         :returns: Parsed object.
         :raises EmptyFieldParseError: Empty field found in input
         :raises LabelOnlyParseError: label delimiter was not found in field
-        :raises InvalidKeyParseError: Invalid key found in input
+        :raises InvalidLabelParseError: Invalid label found in input
         """
         for eol in self.eols:
             if line.endswith(eol):
@@ -195,14 +195,14 @@ class BaseLineParser(Generic[U]):
                     raise self.EmptyFieldParseError("Empty field found in input", line)
                 continue
             if self.labeldelimiter in field:
-                k, _, v = field.partition(self.labeldelimiter)
-                if self.strict and len(k) == 0:
-                    raise self.InvalidKeyParseError("Empty key found", line)
-                if self.strict and not self._is_strictly_valid_key(k):
-                    raise self.InvalidKeyParseError(
-                        "Invalid char found in key: {!r}".format(k), line
+                l, _, v = field.partition(self.labeldelimiter)
+                if self.strict and len(l) == 0:
+                    raise self.InvalidLabelParseError("Empty label found", line)
+                if self.strict and not self._is_strictly_valid_label(l):
+                    raise self.InvalidLabelParseError(
+                        "Invalid char found in label: {!r}".format(l), line
                     )
-                r.append((k, v))
+                r.append((l, v))
             else:
                 if self.strict:
                     raise self.LabelOnlyParseError(
@@ -211,18 +211,18 @@ class BaseLineParser(Generic[U]):
                 r.append((field, self._empty_value))
         return r
 
-    _valid_key_chars = None  # type: U
+    _accept_label_chars = None  # type: U
 
-    def _is_strictly_valid_key(self, key):
+    def _is_strictly_valid_label(self, label):
         # type: (U,) -> bool
-        """Return False when KEY does not strictly follow spec.
+        """Return False when LABEL does not strictly follow spec.
 
-        :param key: Input to validate
-        :returns: True if key is in valid format
+        :param label: Input to validate
+        :returns: True if label is in valid format
         """
         # TODO: Faster way of doing this?
-        for c in key:
-            if c not in self._valid_key_chars:
+        for c in label:
+            if c not in self._accept_label_chars:
                 return False
         return True
 
@@ -236,7 +236,7 @@ class StrLineParser(BaseLineParser[Text]):
     _empty_value = u""
 
     # [0-9A-Za-z_.-]
-    _valid_key_chars = string.ascii_letters + string.digits + u"_.-"
+    _accept_label_chars = string.ascii_letters + string.digits + u"_.-"
 
 
 class BytesLineParser(BaseLineParser[bytes]):
@@ -248,4 +248,6 @@ class BytesLineParser(BaseLineParser[bytes]):
     _empty_value = b""
 
     # [0-9A-Za-z_.-]
-    _valid_key_chars = (string.ascii_letters + string.digits + u"_.-").encode("ascii")
+    _accept_label_chars = (string.ascii_letters + string.digits + u"_.-").encode(
+        "ascii"
+    )
