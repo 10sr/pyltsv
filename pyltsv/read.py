@@ -139,6 +139,9 @@ class BaseLineParser(Generic[U]):
     class InvalidLabelParseError(ParseError):
         """Invalid label was found in field."""
 
+    class InvalidValueParseError(ParseError):
+        """Invalid label was found in field."""
+
     def __init__(self, strict=False, delimiter=None, labeldelimiter=None, eols=None):
         # type: (bool, Optional[U], Optional[U], Optional[Iterable[U]]) -> None
         """Initialize.
@@ -178,6 +181,7 @@ class BaseLineParser(Generic[U]):
         :raises EmptyFieldParseError: Empty field found in input
         :raises LabelOnlyParseError: label delimiter was not found in field
         :raises InvalidLabelParseError: Invalid label found in input
+        :raises InvalidValueParseError: Invalid value found in input
         """
         for eol in self.eols:
             if line.endswith(eol):
@@ -202,6 +206,10 @@ class BaseLineParser(Generic[U]):
                     raise self.InvalidLabelParseError(
                         "Invalid char found in label: {!r}".format(l), line
                     )
+                if self.strict and not self._is_strictly_valid_value(v):
+                    raise self.InvalidValueParseError(
+                        "Invalid char found in value: {!r}".format(v), line
+                    )
                 r.append((l, v))
             else:
                 if self.strict:
@@ -212,6 +220,7 @@ class BaseLineParser(Generic[U]):
         return r
 
     _accept_label_chars = None  # type: U
+    _reject_value_chars = None  # type: U
 
     def _is_strictly_valid_label(self, label):
         # type: (U,) -> bool
@@ -226,6 +235,19 @@ class BaseLineParser(Generic[U]):
                 return False
         return True
 
+    def _is_strictly_valid_value(self, value):
+        # type: (U,) -> bool
+        """Return False when VALUE does not strictly follow spec.
+
+        :param value: Input to validate
+        :returns: True if value is in valid format
+        """
+        # TODO: Faster way of doing this?
+        for c in value:
+            if c in self._reject_value_chars:
+                return False
+        return True
+
 
 class StrLineParser(BaseLineParser[Text]):
     """LTSV line parser for unicode str."""
@@ -237,6 +259,9 @@ class StrLineParser(BaseLineParser[Text]):
 
     # [0-9A-Za-z_.-]
     _accept_label_chars = string.ascii_letters + string.digits + u"_.-"
+    # Not %x01-08 / %x0B / %x0C / %x0E-FF
+    # NULL, \t, \n, \r
+    _reject_value_chars = u"\x00\x09\x0a\x0d"
 
 
 class BytesLineParser(BaseLineParser[bytes]):
@@ -251,3 +276,6 @@ class BytesLineParser(BaseLineParser[bytes]):
     _accept_label_chars = (string.ascii_letters + string.digits + u"_.-").encode(
         "ascii"
     )
+    # Not %x01-08 / %x0B / %x0C / %x0E-FF
+    # NULL, \t, \n, \r
+    _reject_value_chars = b"\x00\x09\x0a\x0d"

@@ -112,11 +112,31 @@ class TestStrLineParser(unittest.TestCase):
         self.assertEqual(list(actual), expected)
         return
 
-    def test_parse_strict_invalid(self):
+    def test_parse_strict_invalid_config(self):
         # type: () -> None
         """Test parser with strict mode enabled and invalid config given."""
         with self.assertRaises(StrLineParser.ParserConfigError):
             _ = StrLineParser(strict=True, delimiter=u",")
+        return
+
+    @parameterized.expand(
+        [
+            ("basic", u"a:1\tb:2\n", [(u"a", u"1"), (u"b", u"2")]),
+            ("crlf", u"a:1\tb:2\r\n", [(u"a", u"1"), (u"b", u"2")]),
+            ("empty", u"\n", []),
+            ("emptyvalue", u"a:\n", [(u"a", u"")]),
+        ]
+    )
+    def test_parse_strict_ok(self, name, input, expected):
+        # type: (str, Text, List[Tuple[Text, Optional[Text]]]) -> None
+        """Test parser with strict mode enabled and invalid config given.
+
+        :param name: Name of this parameter
+        :param input: Input line
+        :param expected: Expected parsed result
+        """
+        actual = StrLineParser(strict=True).parse(input)
+        self.assertEqual(list(actual), expected)
         return
 
 
