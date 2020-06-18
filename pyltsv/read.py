@@ -1,5 +1,7 @@
 """LTSV reader."""
 
+import string
+
 from typing import Generic
 from typing import IO  # noqa: I001  # isort sorts this wrongly
 from typing import Iterable
@@ -134,6 +136,9 @@ class BaseLineParser(Generic[U]):
     class LabelOnlyParseError(ParseError):
         """Label delimiter was not found in field."""
 
+    class InvalidKeyParseError(ParseError):
+        """Invalid key was found in field."""
+
     def __init__(self, strict=False, delimiter=None, labeldelimiter=None, eols=None):
         # type: (bool, Optional[U], Optional[U], Optional[Iterable[U]]) -> None
         """Initialize.
@@ -172,6 +177,7 @@ class BaseLineParser(Generic[U]):
         :returns: Parsed object.
         :raises EmptyFieldParseError: Empty field found in input
         :raises LabelOnlyParseError: label delimiter was not found in field
+        :raises InvalidKeyParseError: Invalid key found in input
         """
         for eol in self.eols:
             if line.endswith(eol):
@@ -190,6 +196,12 @@ class BaseLineParser(Generic[U]):
                 continue
             if self.labeldelimiter in field:
                 k, _, v = field.partition(self.labeldelimiter)
+                if self.strict and len(k) == 0:
+                    raise self.InvalidKeyParseError("Empty key found", line)
+                if self.strict and not self._is_strictly_valid_key(k):
+                    raise self.InvalidKeyParseError(
+                        "Invalid char found in key: {!r}".format(k), line
+                    )
                 r.append((k, v))
             else:
                 if self.strict:
@@ -198,6 +210,21 @@ class BaseLineParser(Generic[U]):
                     )
                 r.append((field, self._empty_value))
         return r
+
+    _valid_key_chars = None  # type: U
+
+    def _is_strictly_valid_key(self, key):
+        # type: (U,) -> bool
+        """Return False when KEY does not strictly follow spec.
+
+        :param key: Input to validate
+        :returns: True if key is in valid format
+        """
+        # TODO: Faster way of doing this?
+        for c in key:
+            if c not in self._valid_key_chars:
+                return False
+        return True
 
 
 class StrLineParser(BaseLineParser[Text]):
@@ -208,6 +235,9 @@ class StrLineParser(BaseLineParser[Text]):
     eols = (u"\r\n", u"\n")
     _empty_value = u""
 
+    # [0-9A-Za-z_.-]
+    _valid_key_chars = string.ascii_letters + string.digits + u"_.-"
+
 
 class BytesLineParser(BaseLineParser[bytes]):
     """LTSV line parser for bytes."""
@@ -216,3 +246,6 @@ class BytesLineParser(BaseLineParser[bytes]):
     labeldelimiter = b":"
     eols = (b"\r\n", b"\n")
     _empty_value = b""
+
+    # [0-9A-Za-z_.-]
+    _valid_key_chars = (string.ascii_letters + string.digits + u"_.-").encode("ascii")
