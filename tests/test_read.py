@@ -1,4 +1,5 @@
 # mypy: allow-untyped-decorators
+# -*- coding: utf-8 -*-
 """Test reader."""
 
 import unittest
@@ -125,6 +126,7 @@ class TestStrLineParser(unittest.TestCase):
             ("crlf", u"a:1\tb:2\r\n", [(u"a", u"1"), (u"b", u"2")]),
             ("empty", u"\n", []),
             ("emptyvalue", u"a:\n", [(u"a", u"")]),
+            ("colonvalue", u"a::\n", [(u"a", u":")]),
         ]
     )
     def test_parse_strict_ok(self, name, input, expected):
@@ -137,6 +139,30 @@ class TestStrLineParser(unittest.TestCase):
         """
         actual = StrLineParser(strict=True).parse(input)
         self.assertEqual(list(actual), expected)
+        return
+
+    @parameterized.expand(
+        [
+            ("emptyfield", u"a:1\t\tb:2\n", StrLineParser.EmptyFieldParseError),
+            ("labelonly", u"a:1\tb\n", StrLineParser.LabelOnlyParseError),
+            ("startswithtab", u"\ta:1\t\tb:2\n", StrLineParser.EmptyFieldParseError),
+            ("emptylabel", u"a:1\t:2\n", StrLineParser.InvalidLabelParseError),
+            ("invalidlabel", u"^:1\tb:2\n", StrLineParser.InvalidLabelParseError),
+            ("invalidlabel", u"a:1\tあ:2\n", StrLineParser.InvalidLabelParseError),
+            ("invalidvalue", u"a:1\n\tb:2\n", StrLineParser.InvalidValueParseError),
+        ]
+    )
+    def test_parse_strict_err(self, name, input, expected_err):
+        # type: (str, Text, StrLineParser.ParseError) -> None
+        """Test parser with strict mode enabled and invalid input given.
+
+        :param name: Name of this parameter
+        :param input: Input line
+        :param expected_err: Expected Error
+        """
+        parser = StrLineParser(strict=True)
+        with self.assertRaises(expected_err):  # type: ignore
+            _ = parser.parse(input)
         return
 
 
