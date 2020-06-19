@@ -175,3 +175,31 @@ class TestBytesLineParser(unittest.TestCase):
         actual = BytesLineParser().parse(b"a:1\tb:2\n")
         self.assertEqual(list(actual), [(b"a", b"1"), (b"b", b"2")])
         return
+
+    @parameterized.expand(
+        [
+            ("emptyfield", b"a:1\t\tb:2\n", BytesLineParser.EmptyFieldParseError),
+            ("labelonly", b"a:1\tb\n", BytesLineParser.LabelOnlyParseError),
+            ("startswithtab", b"\ta:1\t\tb:2\n", BytesLineParser.EmptyFieldParseError),
+            ("emptylabel", b"a:1\t:2\n", BytesLineParser.InvalidLabelParseError),
+            ("invalidlabel", b"^:1\tb:2\n", BytesLineParser.InvalidLabelParseError),
+            (
+                "invalidlabel",
+                u"a:1\tあ:2\n".encode("utf-8"),
+                BytesLineParser.InvalidLabelParseError,
+            ),
+            ("invalidvalue", b"a:1\n\tb:2\n", BytesLineParser.InvalidValueParseError),
+        ]
+    )
+    def test_parse_strict_err(self, name, input, expected_err):
+        # type: (str, bytes, BytesLineParser.ParseError) -> None
+        """Test parser with strict mode enabled and invalid input given.
+
+        :param name: Name of this parameter
+        :param input: Input line
+        :param expected_err: Expected Error
+        """
+        parser = BytesLineParser(strict=True)
+        with self.assertRaises(expected_err):  # type: ignore
+            _ = parser.parse(input)
+        return
