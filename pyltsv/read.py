@@ -103,17 +103,14 @@ class BytesReader(BaseReader[bytes]):
     """LTSV reader for bytes."""
 
 
-U = TypeVar("U", Text, bytes)
-
-
-class BaseLineParser(Generic[U]):
+class BaseLineParser(Generic[T]):
     """Base LTSV line parser."""
 
     strict = False
-    delimiter = None  # type: U
-    labeldelimiter = None  # type: U
-    eols = None  # type: Iterable[U]
-    _empty_value = None  # type: U
+    delimiter = None  # type: T
+    labeldelimiter = None  # type: T
+    eols = None  # type: Iterable[T]
+    _empty_value = None  # type: T
 
     class ParserConfigError(ValueError):
         """Invalid parser configuration given."""
@@ -145,7 +142,7 @@ class BaseLineParser(Generic[U]):
         """Invalid label was found in field."""
 
     def __init__(self, strict=False, delimiter=None, labeldelimiter=None, eols=None):
-        # type: (bool, Optional[U], Optional[U], Optional[Iterable[U]]) -> None
+        # type: (bool, Optional[T], Optional[T], Optional[Iterable[T]]) -> None
         """Initialize.
 
         TODO: Write about strict mode
@@ -173,7 +170,7 @@ class BaseLineParser(Generic[U]):
         return
 
     def parse(self, line):
-        # type: (U,) -> Iterable[Tuple[U, U]]
+        # type: (T,) -> Iterable[Tuple[T, T]]
         """Parse one line.
 
         Errors will be raised only when strict is set to True.
@@ -221,12 +218,12 @@ class BaseLineParser(Generic[U]):
                 r.append((field, self._empty_value))
         return r
 
-    # For U==text, use FrozenSet[Text], for U==bytes, use FrozenSet[int]
+    # For T==text, use FrozenSet[Text], for T==bytes, use FrozenSet[int]
     _accept_label_chars = None  # type: ClassVar[FrozenSet[Union[Text, int]]]
     _reject_value_chars = None  # type: ClassVar[FrozenSet[Union[Text, int]]]
 
     def _is_strictly_valid_label(self, label):
-        # type: (U,) -> bool
+        # type: (T,) -> bool
         """Return False when LABEL does not strictly follow spec.
 
         :param label: Input to validate
@@ -239,7 +236,7 @@ class BaseLineParser(Generic[U]):
         return True
 
     def _is_strictly_valid_value(self, value):
-        # type: (U,) -> bool
+        # type: (T,) -> bool
         """Return False when VALUE does not strictly follow spec.
 
         :param value: Input to validate
