@@ -133,7 +133,7 @@ class BaseLineFormatter(Generic[T]):
     class InvalidLabelFormatError(FormatError):
         """Invalid label was found in data."""
 
-    class InvalidValueParseError(FormatError):
+    class InvalidValueFormatError(FormatError):
         """Invalid value was found in data."""
 
     def __init__(self, strict=False, delimiter=None, labeldelimiter=None, eol=None):
@@ -172,6 +172,7 @@ class BaseLineFormatter(Generic[T]):
         :returns: One LTSV line
         :raises InvalidInputFormatError: Unexpected input format
         """
+        # TODO: Implement strict mode
         if len(cast(Sized, row)) == 0:
             return self._empty_value + self.eol
 
