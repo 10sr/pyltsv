@@ -5,4 +5,7 @@
 pyltsv
 ======
 
-Python Library for LTSV
+Python Library for [LTSV][]
+
+
+[LTSV]: http://ltsv.org/
