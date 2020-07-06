@@ -5,6 +5,8 @@ verify_ssl = true
 
 [packages]
 pyltsv = {editable = true,extras = ["dev", "linter"],path = "."}
+# flake8.exceptions.FailedToLoadPlugin: Flake8 failed to load plugin "BLK" due to No module named 'typed_ast'.
+typed-ast = "*"
 
 [pipenv]
 allow_prereleases = true
