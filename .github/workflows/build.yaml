@@ -83,7 +83,8 @@ jobs:
       - name: Install denendencies
         run: |
           set -eux
-          pip install .[dev]
+          pip install pipenv
+          pipenv install --dev --deploy --system
       - name: Run test
         run: |
           set -eux
@@ -115,7 +116,8 @@ jobs:
       - name: Install denendencies
         run: |
           set -eux
-          pip install .[dev] .[linter]
+          pip install pipenv
+          pipenv install --dev --deploy --system
       - name: Run linter
         run: |
           set -eux
