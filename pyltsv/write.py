@@ -77,7 +77,7 @@ class BaseWriter(Generic[T]):
         """
         line = self._formatter.format(row)
         n = self._ltsvfile.write(line)
-        if n is None:  # Python2
+        if n is None:  # Python2  # pragma: no cover
             n = len(line)
         return n
 
