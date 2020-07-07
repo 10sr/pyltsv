@@ -11,7 +11,6 @@ from typing import Iterable
 from typing import List
 from typing import Mapping
 from typing import Optional
-from typing import Sized
 from typing import Text
 from typing import Tuple
 from typing import TypeVar
@@ -176,16 +175,17 @@ class BaseLineFormatter(Generic[T]):
         :raises InvalidInputFormatError: Unexpected input format
         """
         # TODO: Implement strict mode
-        if len(cast(Sized, row)) == 0:
-            return self._empty_value + self.eol
 
         items = []  # type: Iterable[Tuple[T, Optional[T]]]
-        if isinstance(row, dict):
+        if isinstance(row, Mapping):
             items = row.items()
-        elif isinstance(row, tuple):
-            items = row
+        elif isinstance(row, Iterable):
+            items = cast(Iterable[Tuple[T, Optional[T]]], row)
         else:
-            raise self.InvalidInputFormatError("Unknown input", row)
+            raise self.InvalidInputFormatError("Unknown input object", row)
+
+        if len(items) == 0:
+            return self._empty_value + self.eol
 
         fields = []  # type: List[T]
         for k, v in items:
