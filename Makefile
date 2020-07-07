@@ -12,10 +12,7 @@ codecov:
 	codecov
 
 
-lint: mypy flake8 pylint
-
-pylint:
-	pylint --rcfile=setup.cfg pyltsv
+lint: mypy flake8
 
 flake8:
 	flake8 .
