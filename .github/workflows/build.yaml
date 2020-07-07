@@ -51,8 +51,9 @@ jobs:
     strategy:
       matrix:
         python-version: [2.7, 3.5, 3.6, 3.7, 3.8]
-    env:
-      python_version_codecov: 3.8
+        include:
+          - python-version: 3.8
+            codecov: true
     steps:
       - name: Checkout
         uses: actions/checkout@v1
@@ -81,7 +82,7 @@ jobs:
           make test
       - name: Run codecov
         uses: codecov/codecov-action@v1
-        if: matrix.python-version == env.python_version_codecov
+        if: matrix.codecov
 
   lint:
     runs-on: ubuntu-latest
