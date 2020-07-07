@@ -60,3 +60,16 @@ class TestWriter(unittest.TestCase):
         self.assertEqual(n, 16)
         self.assertEqual(f.getvalue(), u"a:1\tb:2\na:3\tb:4\n")
         return
+
+
+class TestBwriter(unittest.TestCase):
+    """Test bwriter."""
+
+    def test_writerow_tuple(self):
+        # type: () -> None
+        """Test basic usage of writer."""
+        f = BytesIO()
+        n = pyltsv.bwriter(f).writerow(((b"a", b"1"), (b"b", b"2")))
+        self.assertEqual(n, 8)
+        self.assertEqual(f.getvalue(), b"a:1\tb:2\n")
+        return
