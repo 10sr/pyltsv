@@ -90,3 +90,25 @@ class TestStrLineFormatter(unittest.TestCase):
         actual = StrLineFormatter().format(input_)
         self.assertEqual(actual, expected)
         return
+
+    @parameterized.expand([("basic", ((u"a", u"1"), (u"b", u"2")), u"a=1,b=2|")])
+    def test_format_custom_params(self, name, input_, expected):
+        # type: (str, Iterable[Tuple[Text, Optional[Text]]], Text) -> None
+        """Test formatter with custom parameters.
+
+        :param name: Name of this parameter
+        :param input_: Input data object
+        :param expected: Expected LTSV string
+        """
+        actual = StrLineFormatter(delimiter=u",", labeldelimiter=u"=", eol=u"|").format(
+            input_
+        )
+        self.assertEqual(actual, expected)
+        return
+
+    def test_format_invalid_input_object(self):
+        # type: () -> None
+        """Test formatter with invalid input object."""
+        with self.assertRaises(StrLineFormatter.InvalidInputFormatError):
+            _ = StrLineFormatter().format(1)  # type: ignore
+        return
