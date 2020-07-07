@@ -77,7 +77,10 @@ class BaseWriter(Generic[T]):
         :returns: the number of texts or bytes written
         """
         line = self._formatter.format(row)
-        return self._ltsvfile.write(line)
+        n = self._ltsvfile.write(line)
+        if n is None:  # Python2
+            n = len(line)
+        return n
 
     def writerows(self, rows):
         # type: (Iterable[Union[_INPUT_DICT[T], _INPUT_TUPLE[T]]]) -> int
