@@ -116,6 +116,13 @@ class TestStrLineFormatter(unittest.TestCase):
         self.assertEqual(actual, expected)
         return
 
+    def test_format_strict_invalid_config(self):
+        # type: () -> None
+        """Test formatter with strict mode enabled and invalid config given."""
+        with self.assertRaises(StrLineFormatter.FormatterConfigError):
+            _ = StrLineFormatter(strict=True, delimiter=u",")
+        return
+
     def test_format_invalid_input_object(self):
         # type: () -> None
         """Test formatter with invalid input object."""
