@@ -6,9 +6,11 @@ import unittest
 
 from collections import OrderedDict
 from typing import Iterable
+from typing import Mapping
 from typing import Optional
 from typing import Text
 from typing import Tuple
+from typing import Union
 
 from parameterized import parameterized
 from six import BytesIO
@@ -78,9 +80,17 @@ class TestBwriter(unittest.TestCase):
 class TestStrLineFormatter(unittest.TestCase):
     """Test StrLineFormatter."""
 
-    @parameterized.expand([("basic", ((u"a", u"1"), (u"b", u"2")), u"a:1\tb:2\n")])
+    @parameterized.expand(
+        [
+            ("basic", ((u"a", u"1"), (u"b", u"2")), u"a:1\tb:2\n"),
+            ("basicdict", OrderedDict(((u"a", u"1"), (u"b", u"2"))), u"a:1\tb:2\n"),
+            ("emptyvalue", ((u"a", u""), (u"b", u"2")), u"a:\tb:2\n"),
+            ("nonevalue", ((u"a", None), (u"b", u"2")), u"a:\tb:2\n"),
+            ("empty", (), u"\n"),
+        ]
+    )
     def test_format(self, name, input_, expected):
-        # type: (str, Iterable[Tuple[Text, Optional[Text]]], Text) -> None
+        # type: (str, Union[Iterable[Tuple[Text, Optional[Text]]], Mapping[Text, Optional[Text]]], Text) -> None
         """Test basic usage of format.
 
         :param name: Name of this parameter
