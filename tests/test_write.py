@@ -5,7 +5,7 @@
 import unittest
 
 from collections import OrderedDict
-from typing import List
+from typing import Iterable
 from typing import Optional
 from typing import Text
 from typing import Tuple
@@ -72,4 +72,21 @@ class TestBwriter(unittest.TestCase):
         n = pyltsv.bwriter(f).writerow(((b"a", b"1"), (b"b", b"2")))
         self.assertEqual(n, 8)
         self.assertEqual(f.getvalue(), b"a:1\tb:2\n")
+        return
+
+
+class TestStrLineFormatter(unittest.TestCase):
+    """Test StrLineFormatter."""
+
+    @parameterized.expand([("basic", ((u"a", u"1"), (u"b", u"2")), u"a:1\tb:2\n")])
+    def test_format(self, name, input_, expected):
+        # type: (str, Iterable[Tuple[Text, Optional[Text]]], Text) -> None
+        """Test basic usage of format.
+
+        :param name: Name of this parameter
+        :param input_: Input data object
+        :param expected: Expected LTSV string
+        """
+        actual = StrLineFormatter().format(input_)
+        self.assertEqual(actual, expected)
         return
