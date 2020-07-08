@@ -2,11 +2,11 @@
 
 import string
 
-from typing import cast  # noqa: I001  # isort sorts this wrongly
+from typing import cast
 from typing import ClassVar
 from typing import FrozenSet
 from typing import Generic
-from typing import IO  # noqa: I001  # isort sorts this wrongly
+from typing import IO
 from typing import Iterable
 from typing import List
 from typing import Mapping
