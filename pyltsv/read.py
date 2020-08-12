@@ -14,34 +14,30 @@ from typing import TypeVar
 from typing import Union
 
 
-def reader(ltsvfile, strict=False, delimiter=None, labeldelimiter=None, eols=None):
-    # type: (IO[Text], bool, Optional[Text], Optional[Text], Optional[Iterable[Text]]) -> StrReader
+def reader(ltsvfile, strict=False, delimiter=None, labeldelimiter=None):
+    # type: (IO[Text], bool, Optional[Text], Optional[Text]) -> StrReader
     """Get LTSV reader for unicode str.
 
     :param ltsvfile: File-like object to read input
     :param strict: Enable strict parsing
     :param delimiter: Set custom field delimiter
     :param labeldelimiter: Set custom label delimiter
-    :param eols: Set custom EOL characters
     :returns: StrReader object
     """
-    return StrReader(ltsvfile, StrLineParser(strict, delimiter, labeldelimiter, eols))
+    return StrReader(ltsvfile, StrLineParser(strict, delimiter, labeldelimiter))
 
 
-def breader(ltsvfile, strict=False, delimiter=None, labeldelimiter=None, eols=None):
-    # type: (IO[bytes], bool, Optional[bytes], Optional[bytes], Optional[Iterable[bytes]]) -> BytesReader
+def breader(ltsvfile, strict=False, delimiter=None, labeldelimiter=None):
+    # type: (IO[bytes], bool, Optional[bytes], Optional[bytes]) -> BytesReader
     """Get LTSV reader for bytes.
 
     :param ltsvfile: File-like object to read input
     :param strict: Enable strict parsing
     :param delimiter: Set custom field delimiter
     :param labeldelimiter: Set custom label delimiter
-    :param eols: Set custom EOL characters
     :returns: BytesReader object
     """
-    return BytesReader(
-        ltsvfile, BytesLineParser(strict, delimiter, labeldelimiter, eols)
-    )
+    return BytesReader(ltsvfile, BytesLineParser(strict, delimiter, labeldelimiter))
 
 
 T = TypeVar("T", Text, bytes)
