@@ -103,7 +103,7 @@ jobs:
       - name: Install denendencies
         run: |
           set -eux
-          pip install -e .[dev] .[linter]
+          pip install -e .[dev,linter]
       - name: Run linter
         run: |
           set -eux
