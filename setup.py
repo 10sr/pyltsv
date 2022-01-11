@@ -14,4 +14,6 @@ def _get_version():  # type: ignore
     raise RuntimeError("Unable to find version string.")
 
 
-setup(version=_get_version(),)  # type: ignore
+setup(
+    version=_get_version(),
+)  # type: ignore
