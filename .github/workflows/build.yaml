@@ -104,7 +104,7 @@ jobs:
         run: |
           set -eux
           pip install -e .[dev,linter]
-          mypy --install-types
+          mypy --install-types .
       - name: Run linter
         run: |
           set -eux
