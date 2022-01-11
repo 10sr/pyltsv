@@ -9,3 +9,9 @@ Python Library for [LTSV][]
 
 
 [LTSV]: http://ltsv.org/
+
+
+Development
+-----------
+
+    pipenv run python3 -m pip install -e .[dev,linter]

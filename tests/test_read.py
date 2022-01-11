@@ -79,9 +79,17 @@ class TestStrLineParser(unittest.TestCase):
             ("labelonly", u"a\n", [(u"a", "")]),
             ("emptyvalue", u"a:\n", [(u"a", u"")]),
             ("emptykey", u":1\n", [(u"", u"1")]),
-            ("blankfield", u"\ta:1\t\tb:2\n", [(u"a", u"1"), (u"b", u"2")],),
+            (
+                "blankfield",
+                u"\ta:1\t\tb:2\n",
+                [(u"a", u"1"), (u"b", u"2")],
+            ),
             # When directly passed newlines are allowed when strict=False
-            ("newlineinside", u"\ta:1\n\t\tb:2\n", [(u"a", u"1\n"), (u"b", u"2")],),
+            (
+                "newlineinside",
+                u"\ta:1\n\t\tb:2\n",
+                [(u"a", u"1\n"), (u"b", u"2")],
+            ),
         ]
     )
     def test_parse(self, name, input, expected):
@@ -97,7 +105,9 @@ class TestStrLineParser(unittest.TestCase):
         return
 
     @parameterized.expand(
-        [("basic", u"a=1,b=3|", [(u"a", u"1"), (u"b", u"3")]),]
+        [
+            ("basic", u"a=1,b=3|", [(u"a", u"1"), (u"b", u"3")]),
+        ]
     )
     def test_parse_custom_params(self, name, input, expected):
         # type: (str, Text, List[Tuple[Text, Optional[Text]]]) -> None

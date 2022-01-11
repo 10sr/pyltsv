@@ -103,7 +103,8 @@ jobs:
       - name: Install denendencies
         run: |
           set -eux
-          pip install .[dev] .[linter]
+          pip install -e .[dev,linter]
+          mypy --install-types --non-interactive .
       - name: Run linter
         run: |
           set -eux
