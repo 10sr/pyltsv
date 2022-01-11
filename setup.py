@@ -1,11 +1,12 @@
 #!/usr/bin/env python
+# type: ignore
 
 """Setup script."""
 
 from setuptools import setup
 
 
-def _get_version():  # type: ignore
+def _get_version():
     with open("pyltsv/_version.py") as f:
         for line in f:
             if line.startswith("__version__"):
@@ -16,4 +17,4 @@ def _get_version():  # type: ignore
 
 setup(
     version=_get_version(),
-)  # type: ignore
+)
