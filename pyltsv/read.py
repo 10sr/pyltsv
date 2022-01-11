@@ -196,7 +196,7 @@ class BaseLineParser(Generic[T]):
             if self.labeldelimiter in field:
                 l, _, v = field.partition(self.labeldelimiter)
                 if self.strict and len(l) == 0:
-                    raise self.InvalidLabelParseError("Empty label found", line)
+                    raise self.InvalidLabelParseError("Empty label found" "aaa", line)
                 if self.strict and not self._is_strictly_valid_label(l):
                     raise self.InvalidLabelParseError(
                         "Invalid char found in label: {!r}".format(l), line
